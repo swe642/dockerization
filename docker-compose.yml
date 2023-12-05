@@ -1,0 +1,38 @@
+version: '1.0'
+
+services:
+  mysqldb:
+    image: mysql:latest
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: 'password'
+      MYSQL_DATABASE: 'swe_642_surveys'
+      MYSQL_USER: 'reg_user'
+      MYSQL_PASSWORD: 'password'
+    ports:
+      - "3307:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  swe642surveys-backend:
+    image: swe642surveys
+    build:
+      context: swe642surveys
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - mysqldb
+
+  swe642surveys-frontend:
+    image: swe642surveys-ui
+    build:
+      context: swe642surveys-ui
+      dockerfile: DockerFile
+    ports:
+      - "4200:80"
+    depends_on:
+      - swe642surveys-backend
+
+volumes:
+  mysql_data:
